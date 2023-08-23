@@ -76,8 +76,14 @@ export class Chat {
   }
 
   static clearResult() {
-    const dataRange = Chat.getDataRange();
-    dataRange.clear();
+    const sheet = SpreadsheetApp.getActiveSheet();
+    const dataRange = sheet.getRange(
+      Chat.DATA_ROW,
+      Chat.COLUMN.result + 1,
+      sheet.getLastRow() - Chat.DATA_ROW + 1,
+      1
+    );
+    dataRange.clearContent();
   }
 
   static updateRow(chat: Chat) {
