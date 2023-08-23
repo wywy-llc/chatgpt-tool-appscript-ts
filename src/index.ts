@@ -16,14 +16,14 @@
  */
 import { CreateChatCompletionRequestMessage } from 'openai/resources/chat';
 import { OpenAiClient } from './app/open-ai-client';
-import { Story } from './app/story';
+import { Chat } from './app/chat';
 import {
   ChatCompletion,
   CompletionCreateParamsBase,
 } from 'openai/resources/chat/completions';
 
 function main() {
-  const stories = Story.getAll();
+  const stories = Chat.getAll();
   stories.forEach(story => {
     console.log(story);
   });
@@ -79,27 +79,36 @@ function showApiAuthSetting() {
   ui.alert('認証情報の設定が完了しました！', Browser.Buttons.OK);
 }
 
-function createStory() {
+function createChats() {
   const client = new OpenAiClient();
-  const title = 'AIが尾崎紅葉の「金色夜叉」を完結させる';
-  const genreId = '6';
-  const subTopic = 'AIが金色夜叉の正体を暴き、恐怖の事実に主人公を直面させる';
-  const messages: CreateChatCompletionRequestMessage[] = [
-    {
-      role: 'system',
-      content: Story.getSystemContent(title, genreId),
-    },
-    {
-      role: 'user',
-      content: Story.getUserRequest(title, genreId, subTopic),
-    },
-  ];
-  const params: CompletionCreateParamsBase = {
-    model: 'gpt-3.5-turbo',
-    messages: messages,
-    max_tokens: 3000,
-    temperature: 0.9,
-  };
-  const chatComp: ChatCompletion = client.createChatCompletion(params);
-  console.log(chatComp.choices[0].message.content);
+  Chat.getAll()
+    .filter(chat => {
+      return chat.id && chat.system && chat.user && !chat.result;
+    })
+    .forEach(chat => {
+      const messages: CreateChatCompletionRequestMessage[] = [
+        {
+          role: 'system',
+          content: chat.system,
+        },
+        {
+          role: 'user',
+          content: chat.user,
+        },
+      ];
+      const params: CompletionCreateParamsBase = {
+        model: 'gpt-3.5-turbo',
+        messages: messages,
+        max_tokens: 3000,
+        temperature: Number(chat.temperature),
+      };
+      console.log(params);
+      const chatComp: ChatCompletion = client.createChatCompletion(params);
+      const ans = chatComp.choices[0].message.content;
+      if (ans) {
+        chat.result = ans;
+        Chat.updateRow(chat);
+        console.log(ans);
+      }
+    });
 }
