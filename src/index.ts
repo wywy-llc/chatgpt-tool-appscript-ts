@@ -22,17 +22,9 @@ import {
   CompletionCreateParamsBase,
 } from 'openai/resources/chat/completions';
 
-function main() {
-  const stories = Chat.getAll();
-  stories.forEach(story => {
-    console.log(story);
-  });
-}
-
 /**
  * 初期設定
  * ・トリガー作成
- * ・シート作成
  */
 function initialize() {
   const initTriggers = () => {
@@ -57,6 +49,9 @@ function initialize() {
   initTriggers();
 }
 
+/**
+ * メニューを追加
+ */
 function onOpen() {
   const ui = SpreadsheetApp.getUi();
   const menu = ui
@@ -65,6 +60,9 @@ function onOpen() {
   menu.addToUi();
 }
 
+/**
+ * APIの認証情報の設定プロンプトの表示
+ */
 function showApiAuthSetting() {
   const ui = SpreadsheetApp.getUi();
   const response = ui.prompt('APIのSecret keyを入力してください。');
@@ -79,7 +77,16 @@ function showApiAuthSetting() {
   ui.alert('認証情報の設定が完了しました！', Browser.Buttons.OK);
 }
 
+/**
+ * チャットGPTを実行する。
+ * - システム列、ユーザー列に値が入っている行が実行対象です。
+ * - 実行結果は結果列に出力されます。
+ */
 function createChats() {
+  // 実行前に結果を削除する
+  Chat.clearResult();
+
+  // APIの実行
   const client = new OpenAiClient();
   Chat.getAll()
     .filter(chat => {

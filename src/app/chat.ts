@@ -75,6 +75,11 @@ export class Chat {
     return sheet;
   }
 
+  static clearResult() {
+    const dataRange = Chat.getDataRange();
+    dataRange.clear();
+  }
+
   static updateRow(chat: Chat) {
     if (!chat) {
       return;
