@@ -83,12 +83,22 @@ function showApiAuthSetting() {
  * - 実行結果は結果列に出力されます。
  */
 function createChats() {
-  // 実行前に結果を削除する
-  Chat.clearResult();
-
+  if (!OpenAiClient.API_KEY) {
+    showApiAuthSetting();
+    return;
+  }
   // APIの実行
   const client = new OpenAiClient();
-  Chat.getAll()
+  const chats = Chat.getAll();
+  const nonResults = chats.find(chat => {
+    return chat.id && chat.system && chat.user && !chat.result;
+  });
+  if (!nonResults) {
+    // 全ての結果が埋まっていたら結果をクリアする。
+    Chat.clearResult();
+  }
+
+  chats
     .filter(chat => {
       return chat.id && chat.system && chat.user && !chat.result;
     })
@@ -118,4 +128,11 @@ function createChats() {
         console.log(ans);
       }
     });
+}
+
+/**
+ * 結果をクリアする。
+ */
+function clearAllResult() {
+  Chat.clearResult();
 }
