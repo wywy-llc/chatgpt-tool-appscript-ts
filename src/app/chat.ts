@@ -29,9 +29,9 @@ export class Chat {
   public id: string = '';
   public system: string = '';
   public user: string = '';
-  public model: string = '';
+  public model: string = 'gpt-3.5-turbo';
   public maxTokens: number = 3000;
-  public temperature: number = 1.0;
+  public temperature: number = 0.5;
   public result: string = '';
 
   /**
@@ -44,9 +44,15 @@ export class Chat {
       this.id = record[Chat.COLUMN.id];
       this.system = record[Chat.COLUMN.system];
       this.user = record[Chat.COLUMN.user];
-      this.model = record[Chat.COLUMN.model];
-      this.maxTokens = Number(record[Chat.COLUMN.maxTokens]);
-      this.temperature = Number(record[Chat.COLUMN.temperature]);
+      if (record[Chat.COLUMN.model]) {
+        this.model = record[Chat.COLUMN.model];
+      }
+      if (record[Chat.COLUMN.maxTokens]) {
+        this.maxTokens = Number(record[Chat.COLUMN.maxTokens]);
+      }
+      if (record[Chat.COLUMN.temperature]) {
+        this.temperature = Number(record[Chat.COLUMN.temperature]);
+      }
       this.result = record[Chat.COLUMN.result];
     }
   }
