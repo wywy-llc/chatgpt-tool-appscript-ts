@@ -55,7 +55,7 @@ function initialize() {
 function onOpen() {
   const ui = SpreadsheetApp.getUi();
   const menu = ui
-    .createMenu('ChatGPTのAPI設定')
+    .createMenu('OpenAIのAPI設定')
     .addItem('認証情報の設定', 'showApiAuthSetting');
   menu.addToUi();
 }
