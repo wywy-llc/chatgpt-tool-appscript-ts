@@ -89,16 +89,7 @@ function createChats() {
   }
   // APIの実行
   const client = new OpenAiClient();
-  const chats = Chat.getAll();
-  const nonResults = chats.find(chat => {
-    return chat.id && chat.system && chat.user && !chat.result;
-  });
-  if (!nonResults) {
-    // 全ての結果が埋まっていたら結果をクリアする。
-    Chat.clearResult();
-  }
-
-  chats
+  Chat.getAll()
     .filter(chat => {
       return chat.id && chat.system && chat.user && !chat.result;
     })
@@ -114,9 +105,9 @@ function createChats() {
         },
       ];
       const params: CompletionCreateParamsBase = {
-        model: 'gpt-3.5-turbo',
+        model: chat.model,
         messages: messages,
-        max_tokens: 3000,
+        max_tokens: Number(chat.maxTokens),
         temperature: Number(chat.temperature),
       };
       console.log(params);

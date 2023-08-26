@@ -17,33 +17,37 @@ export class Chat {
   static readonly SHEET_NAME = 'chat';
   static readonly DATA_ROW = 4;
   static readonly DATA_COL = 1;
-  static readonly NUMBER_COLS = ['row'];
   static readonly COLUMN: { [name: string]: number } = {
     id: 0, // ID
     system: 1, // システム
     user: 2, // ユーザー
-    temperature: 3, // ユーザー
-    result: 4, // 結果
+    model: 3, // モデル
+    maxTokens: 4, // モデル
+    temperature: 5, // ユーザー
+    result: 6, // 結果
   };
   public id: string = '';
   public system: string = '';
   public user: string = '';
-  public temperature: string = '';
+  public model: string = '';
+  public maxTokens: number = 3000;
+  public temperature: number = 1.0;
   public result: string = '';
 
   /**
    *
    * @param record
    */
-  constructor(record: string[] | null = null) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  constructor(record: any[] | null = null) {
     if (record) {
-      for (const [name, index] of Object.entries(Chat.COLUMN)) {
-        const value = record[index];
-        if (!value) {
-          continue;
-        }
-        this[name as keyof Chat] = value;
-      }
+      this.id = record[Chat.COLUMN.id];
+      this.system = record[Chat.COLUMN.system];
+      this.user = record[Chat.COLUMN.user];
+      this.model = record[Chat.COLUMN.model];
+      this.maxTokens = Number(record[Chat.COLUMN.maxTokens]);
+      this.temperature = Number(record[Chat.COLUMN.temperature]);
+      this.result = record[Chat.COLUMN.result];
     }
   }
   static getDataRange() {
