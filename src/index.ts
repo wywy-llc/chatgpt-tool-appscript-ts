@@ -65,15 +65,20 @@ function onOpen() {
  */
 function showApiAuthSetting() {
   const ui = SpreadsheetApp.getUi();
-  const response = ui.prompt('APIのSecret keyを入力してください。');
+  const response = ui.prompt('OpenAI APIのSecret keyを入力してください。');
   if (response.getSelectedButton() === ui.Button.CANCEL) {
     return;
   }
   const secretKey = response.getResponseText();
+  if (!secretKey) {
+    ui.alert('Secret keyが未入力です。', Browser.Buttons.OK);
+    return;
+  }
   PropertiesService.getScriptProperties().setProperty(
     OpenAiClient.PROP_OPENAI_API_KEY,
     secretKey
   );
+
   ui.alert('認証情報の設定が完了しました！', Browser.Buttons.OK);
 }
 
@@ -87,11 +92,45 @@ function createChats() {
     showApiAuthSetting();
     return;
   }
+  const activeRange = SpreadsheetApp.getActiveSpreadsheet().getActiveRange();
+  if (!activeRange) {
+    return;
+  }
+  const sheet = activeRange.getSheet();
+  if (!sheet) {
+    return;
+  }
+  const ui = SpreadsheetApp.getUi();
+  if (activeRange.getRowIndex() < Chat.DATA_ROW) {
+    ui.alert(
+      `${Chat.DATA_ROW}行目以降を選択してください。`,
+      Browser.Buttons.OK
+    );
+    return;
+  }
+  const result = ui.alert(
+    `${activeRange.getRowIndex()}〜${
+      activeRange.getRowIndex() + activeRange.getNumRows() - 1
+    }行目を実行します。よろしいですか？`,
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (result === ui.Button.CANCEL) {
+    return;
+  }
+  const rowIndex = activeRange.getRowIndex();
+  const range = sheet.getRange(
+    rowIndex,
+    Chat.DATA_COL,
+    activeRange.getNumRows(),
+    Object.keys(Chat.COLUMN).length
+  );
   // APIの実行
   const client = new OpenAiClient();
-  Chat.getAll()
+  range
+    .getValues()
+    .map(record => new Chat(record))
     .filter(chat => {
-      return chat.id && chat.system && chat.user && !chat.result;
+      return chat.id && chat.system && chat.user;
     })
     .forEach(chat => {
       const messages: CreateChatCompletionRequestMessage[] = [
@@ -107,8 +146,8 @@ function createChats() {
       const params: CompletionCreateParamsBase = {
         model: chat.model,
         messages: messages,
-        max_tokens: Number(chat.maxTokens),
-        temperature: Number(chat.temperature),
+        max_tokens: chat.maxTokens,
+        temperature: chat.temperature,
       };
       console.log(params);
       const chatComp: ChatCompletion = client.createChatCompletion(params);
@@ -119,6 +158,7 @@ function createChats() {
         console.log(ans);
       }
     });
+  ui.alert('実行が完了しました！', Browser.Buttons.OK);
 }
 
 /**
