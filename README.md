@@ -1,5 +1,13 @@
 # GoogleスプレッドシートによるChatGPTツール
 
+![ChatGPTツールの使い方](https://github.com/wywy-llc/chatgpt-tool-appscript-ts/assets/10007402/9e14a378-9b42-4fdb-8141-8066a9b22a20)
+
+## ツールの特徴
+
+- スプレッドシートで複数行を一気に実行可能なので、`temperature`、`model`の違いを効率よく検証できます。
+- スプレッドシートで効率よく質問内容、回答結果を管理することができます。
+- 認証情報(Secret key)をGUIで設定することができます。
+
 ## 利用準備
 
 ### ChatGPTツール(Googleスプレッドシート)をコピーする
@@ -12,11 +20,11 @@
 
 次に、以下サイトを参考にして、OpenAI APIの認証情報(Secret key)を取得してください。
 
-1. 1分でわかる！OpenAIのAPIキーを簡単に入手する方法（ChatGPT）
+- 1分でわかる！OpenAIのAPIキーを簡単に入手する方法（ChatGPT）
   - https://mattyan.org/openai-key/
-2. 【2023年版】OpenAIのAPIキー発行手順！ChatGPTや文章生成AI、画像生成AIを利用可能
+- 【2023年版】OpenAIのAPIキー発行手順！ChatGPTや文章生成AI、画像生成AIを利用可能
   - https://auto-worker.com/blog/?p=6988
-3. OpenAIのAPI Keyの取得方法
+- OpenAIのAPI Keyの取得方法
   - https://doc.gravio.com/manuals/gravio4/1/ja/topic/openai
 
 ### 認証情報(Secret key)を設定する
@@ -25,6 +33,7 @@
 
 1. ChatGPTツール(Googleスプレッドシート)を開く
 2. メニュー > OpenAIのAPI設定 > 認証情報の設定
+  - ![スクリーンショット 2023-08-26 18 48 20](https://github.com/wywy-llc/chatgpt-tool-appscript-ts/assets/10007402/56a641b7-9ab4-4ac8-9827-ed4cd5ae0c7e)
 3. 認証情報(Secret key)を入力する。
 
 以上で利用準備は完了です。
